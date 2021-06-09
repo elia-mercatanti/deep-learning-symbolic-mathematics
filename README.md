@@ -1,7 +1,8 @@
 # Deep Learning for Symbolic Mathematics
 
-PyTorch original implementation of [Deep Learning for Symbolic Mathematics](https://arxiv.org/abs/1912.01412) (ICLR
-2020).
+Original Paper: [Deep Learning for Symbolic Mathematics](https://arxiv.org/abs/1912.01412) (ICLR 2020).
+
+Original GitHub Project: [Deep Learning for Symbolic Mathematics](https://github.com/facebookresearch/SymbolicMathematics).
 
 This repository contains code for:
 
@@ -35,10 +36,11 @@ We also provide:
 
 ## Dependencies
 
-- Python 3
+- [Python 3](https://www.python.org/)
 - [NumPy](http://www.numpy.org/)
 - [SymPy](https://www.sympy.org/)
 - [PyTorch](http://pytorch.org/) (tested on version 1.3)
+- [Numexpr](https://github.com/pydata/numexpr)
 - [Apex](https://github.com/nvidia/apex#quick-start) (for fp16 training)
 
 ## Datasets and Trained Models
@@ -112,14 +114,14 @@ Data will be exported in the prefix and infix formats to:
 - `./dumped/prim_bwd_data/EXP_ID/data.infix`
 
 `data.prefix` and `data.infix` are two parallel files containing the same number of lines, with the same equations
-written in prefix and infix representations respectively. In these files, each line contains an input (e.g. the function
-to integrate) and the associated output (e.g. an integral) separated by a tab. In practice, the model only operates on
-prefix data. The infix data is optional, but more human readable, and can be used for debugging purposes.
+written in prefix and infix representations respectively. In these files, each line contains an input (e.g., the function
+to integrate), and the associated output (e.g., an integral) separated by a tab. In practice, the model only operates on
+prefix data. The infix data is optional, but more human-readable, and can be used for debugging purposes.
 
 Note that some generators are very fast, such as `prim_bwd`, which only requires to generate a random function and to
 differentiate it. The others are significantly longer. For instance, the validity of differential equations is checked (
-symbolically and numerically) after generation, which can be expensive. In our case, we generated the data across a
-large number of CPUs to create a large training set. For reproducibility, we provide our training / validation / test
+symbolically and numerically) after generation, which can be expensive. In our case, we generated the data across many 
+CPUs to create a large training set. For reproducibility, we provide our training / validation / test
 datasets in the links above. Generators can be made faster by decreasing the timeout generation time in `char_sp.py`,
 but this may slightly reduce the set of equations that the generator can produce.
 
@@ -271,8 +273,8 @@ may need to update the evaluator in `evaluator.py` accordingly.
 
 ## References
 
-[**Deep Learning for Symbolic Mathematics**](https://arxiv.org/abs/1912.01412) (ICLR 2020) - Guillaume Lample * and
-François Charton *
+[**Deep Learning for Symbolic Mathematics**](https://arxiv.org/abs/1912.01412) (ICLR 2020) - Guillaume Lample and
+François Charton
 
 ```
 @article{lample2019deep,
