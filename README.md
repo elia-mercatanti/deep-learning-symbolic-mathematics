@@ -36,10 +36,11 @@ We also provide:
 
 ## Dependencies
 
-- Python 3
+- [Python 3](https://www.python.org/)
 - [NumPy](http://www.numpy.org/)
 - [SymPy](https://www.sympy.org/)
 - [PyTorch](http://pytorch.org/) (tested on version 1.3)
+- [Numexpr](https://github.com/pydata/numexpr)
 - [Apex](https://github.com/nvidia/apex#quick-start) (for fp16 training)
 
 ## Datasets and Trained Models
