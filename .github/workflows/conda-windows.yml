@@ -6,9 +6,6 @@ jobs:
   build:
 
     runs-on: windows-2019
-    strategy:
-      matrix:
-        python: [3.8]
 
     steps:
       - name: Checkout
@@ -16,7 +13,7 @@ jobs:
       - name: Set up Python ${{ matrix.python }}
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python }}
+          python-version: '3.8'
       - name: Cache Conda
         uses: actions/cache@v2
         with:
@@ -26,7 +23,7 @@ jobs:
       - name: Reproduce Environment with Conda
         uses: conda-incubator/setup-miniconda@v2
         with:
-            miniconda-version: 4.10.1
+            miniconda-version: '4.10.1'
             auto-update-conda: false
             activate-environment: deep-learning-symbolic-mathematics
             environment-file: conda-win-64.lock
