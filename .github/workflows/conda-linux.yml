@@ -1,6 +1,11 @@
 name: Python Package using Conda on Linux
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [ opened, synchronize, reopened ]
 
 jobs:
   build:
@@ -31,8 +36,3 @@ jobs:
             activate-environment: deep-learning-symbolic-mathematics
             environment-file: conda-linux-64.lock
             use-only-tar-bz2: true
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@master
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
