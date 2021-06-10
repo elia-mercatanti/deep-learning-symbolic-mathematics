@@ -26,5 +26,5 @@ jobs:
             miniconda-version: 'latest'
             auto-update-conda: false
             activate-environment: deep-learning-symbolic-mathematics
-            environment-file: conda-win-64.lock
+            environment-file: conda/conda-win-64.lock
             use-only-tar-bz2: true
