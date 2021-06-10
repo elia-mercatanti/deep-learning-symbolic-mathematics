@@ -1,6 +1,6 @@
 # Deep Learning for Symbolic Mathematics
 
-Original Paper: [Deep Learning for Symbolic Mathematics](https://arxiv.org/abs/1912.01412) (ICLR 2020).
+Original Paper: [Deep Learning for Symbolic Mathematics](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/blob/master/paper/deep-learning-symbolic-mathematics-paper.pdf) (ICLR 2020).
 
 Original GitHub Project: [Deep Learning for Symbolic Mathematics](https://github.com/facebookresearch/SymbolicMathematics).
 
@@ -31,7 +31,7 @@ We also provide:
     - Models trained with different configurations of training data
 - **Notebook**
     -
-    An **[ipython notebook](https://github.com/facebookresearch/SymbolicMathematics/blob/master/beam_integration.ipynb)**
+    An **[ipython notebook](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/blob/master/jupyter-notebook/beam_integration.ipynb)**
     with an interactive demo of the model on function integration
 
 ## Dependencies
