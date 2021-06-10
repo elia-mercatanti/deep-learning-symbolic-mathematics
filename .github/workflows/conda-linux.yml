@@ -1,0 +1,40 @@
+name: Python Package using Conda on Linux
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        python: [3.8]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Cache Conda
+        uses: actions/cache@v2
+        with:
+            path: ~/conda_pkgs_dir
+            key:
+              ${{ runner.os }}-conda-${{hashFiles('conda-linux-64.lock', '**/*.yml')}}
+      - name: Reproduce Environment with Conda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+            miniconda-version: 4.10.1
+            auto-update-conda: false
+            activate-environment: deep-learning-symbolic-mathematics
+            environment-file: conda-linux-64.lock
+            use-only-tar-bz2: true
+      - name: Lint with flake8
+        run: |
+            conda install flake8
+            # stop the build if there are Python syntax errors or undefined names
+            flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+            # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+            flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
