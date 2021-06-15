@@ -1,0 +1,16 @@
+name: deep-learning-symbolic-mathematics
+channels:
+  - conda-forge
+  - defaults
+  - pytorch
+dependencies:
+  - python=3.8.10
+  - numpy
+  - cudatoolkit
+  - pytorch
+  - jupyterlab
+  - sympy
+  - numexpr
+  - nvidia-apex
+  - conda-lock
+  - pandas
