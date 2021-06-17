@@ -1,5 +1,5 @@
 # platform: linux-64
-# env_hash: a3ee59f0931dcb09e6822ed394d09c3c69506ceb7d51a68321d995e9a34e271a
+# env_hash: 4ee3c0d27ad4d14a5f0e295a90fb8a0f621d9408249a013de24aa032d76f6675
 @EXPLICIT
 https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2#d7c89558ba9fa0495403155b64376d81
 https://conda.anaconda.org/conda-forge/linux-64/ca-certificates-2021.5.30-ha878542_0.tar.bz2#6a777890e94194dc94a29a76d2a7e721
@@ -117,7 +117,7 @@ https://conda.anaconda.org/conda-forge/noarch/jupyter_client-6.1.12-pyhd8ed1ab_0
 https://conda.anaconda.org/conda-forge/linux-64/numexpr-2.7.3-py38h51da96c_0.tar.bz2#0df7fb81f1a42a9b1d44477b690b53e0
 https://conda.anaconda.org/conda-forge/noarch/pygments-2.9.0-pyhd8ed1ab_0.tar.bz2#a2d9bba43c9b80a42b0ccb9afd7223c2
 https://conda.anaconda.org/conda-forge/noarch/pyopenssl-20.0.1-pyhd8ed1ab_0.tar.bz2#92371c25994d0f5d28a01c1fb75ebf86
-https://conda.anaconda.org/pytorch/linux-64/pytorch-1.9.0-py3.8_cuda10.2_cudnn7.6.5_0.tar.bz2#38a335460e67dcfa1c8cc8fdf0757b7c
+https://conda.anaconda.org/pytorch/linux-64/pytorch-1.8.1-py3.8_cuda10.2_cudnn7.6.5_0.tar.bz2#479251c1e696e919fbb8d6ca365d65f9
 https://conda.anaconda.org/conda-forge/noarch/jupyterlab_pygments-0.1.2-pyh9f0ad1d_0.tar.bz2#2cbd910890bb328e8959246a1e16fac7
 https://conda.anaconda.org/conda-forge/noarch/nbformat-5.1.3-pyhd8ed1ab_0.tar.bz2#bafa5df6d4f8db69a4d197b4657127e7
 https://conda.anaconda.org/conda-forge/linux-64/nvidia-apex-0.1-py38h3af061c_4.tar.bz2#e211a058b9fc22435cf61d3766abd436
