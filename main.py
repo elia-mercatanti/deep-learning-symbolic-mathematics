@@ -86,7 +86,7 @@ def get_parser():
                                  help="Validation metrics")
     argument_parser.add_argument("--accumulate_gradients", type=int, default=1,
                                  help="Accumulate model gradients over N iterations (N times larger batch sizes)")
-    argument_parser.add_argument("--num_workers", type=int, default=10,
+    argument_parser.add_argument("--num_workers", type=int, default=8,
                                  help="Number of CPU workers for DataLoader")
     argument_parser.add_argument("--same_nb_ops_per_batch", type=bool_flag, default=False,
                                  help="Generate sequences with the same number of operators in batches.")
@@ -106,7 +106,7 @@ def get_parser():
     ENVS[argument_parser.parse_known_args()[0].env_name].register_args(argument_parser)
 
     # tasks
-    argument_parser.add_argument("--tasks", type=str, default="",
+    argument_parser.add_argument("--tasks", type=str, default="prim_bwd",
                                  help="Tasks")
 
     # beam search configuration
