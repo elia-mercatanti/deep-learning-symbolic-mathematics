@@ -38,7 +38,7 @@ def init_signal_handler():
     """
     Handle signals sent by SLURM for time limit / pre-emption.
     """
-    signal.signal(signal.SIGUSR1, sig_handler)
+    signal.signal(signal.SIGTERM, sig_handler)
     signal.signal(signal.SIGTERM, term_handler)
     logger.warning("Signal handler installed.")
 
