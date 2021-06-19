@@ -30,7 +30,7 @@ from .sympy_utils import extract_non_constant_subtree, simplify_const_with_coeff
 from .sympy_utils import remove_mul_const, has_inf_nan, has_I, simplify
 from .sympy_utils import remove_root_constant_terms, reduce_coefficients, reindex_coefficients
 from ..utils import bool_flag
-from ..utils import timeout, TimeoutError
+from ..utils import timeout, TimeoutErrorException
 
 CLEAR_SYMPY_CACHE_FREQ = 10000
 
@@ -849,7 +849,7 @@ class CharSPEnvironment(object):
             if self.prim_stats[-1] % 500 == 0:
                 logger.debug(f"{self.worker_id:>2} PRIM STATS {self.prim_stats}")
 
-        except TimeoutError:
+        except TimeoutErrorException:
             raise
         except (ValueError, AttributeError, TypeError, OverflowError, NotImplementedError, UnknownSymPyOperator,
                 ValueErrorExpression):
@@ -919,7 +919,7 @@ class CharSPEnvironment(object):
             if real_nb_ops < nb_ops / 2:
                 return None
 
-        except TimeoutError:
+        except TimeoutErrorException:
             raise
         except (ValueErrorExpression, UnknownSymPyOperator, OverflowError, TypeError):
             return None
@@ -1071,7 +1071,7 @@ class CharSPEnvironment(object):
             if max(len(h_prefix), len(H_prefix)) + 2 > self.max_len:
                 return None
 
-        except TimeoutError:
+        except TimeoutErrorException:
             raise
         except (ValueErrorExpression, UnknownSymPyOperator, OverflowError, TypeError):
             return None
@@ -1176,7 +1176,7 @@ class CharSPEnvironment(object):
                 if len([y for y in eval_values if y <= ZERO_THRESHOLD]) / len(eval_values) < 0.2:
                     return None
 
-        except TimeoutError:
+        except TimeoutErrorException:
             raise
         except (
         ValueError, NotImplementedError, AttributeError, RecursionError, ValueErrorExpression, UnknownSymPyOperator):
@@ -1295,7 +1295,7 @@ class CharSPEnvironment(object):
                 if len([y for y in eval_values if y <= ZERO_THRESHOLD]) / len(eval_values) < 0.2:
                     return None
 
-        except TimeoutError:
+        except TimeoutErrorException:
             raise
         except (
         ValueError, NotImplementedError, AttributeError, RecursionError, ValueErrorExpression, UnknownSymPyOperator):
@@ -1526,7 +1526,7 @@ class EnvDataset(Dataset):
                     continue
                 x, y = xy
                 break
-            except TimeoutError:
+            except TimeoutErrorException:
                 continue
             except Exception as e:
                 logger.error(

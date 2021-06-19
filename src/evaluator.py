@@ -15,7 +15,7 @@ import torch
 
 from .envs.char_sp import InvalidPrefixExpression, is_valid_expr
 from .envs.sympy_utils import simplify
-from .utils import to_cuda, timeout, TimeoutError
+from .utils import to_cuda, timeout, TimeoutErrorException
 
 logger = getLogger()
 
@@ -67,7 +67,7 @@ def check_hypothesis(eq):
         if is_valid_expr(hyp_infix):
             hyp_infix = str(hyp)
 
-    except (TimeoutError, Exception) as e:
+    except (TimeoutErrorException, Exception) as e:
         e_name = type(e).__name__
         if not isinstance(e, InvalidPrefixExpression):
             logger.error(f"Exception {e_name} when checking hypothesis: {hyp_infix}")
