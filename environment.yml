@@ -10,9 +10,9 @@ dependencies:
   - numexpr = 2.7.3
   - nvidia-apex = 0.1
   - python = 3.8.10
-  - numpy = 1.20.3
+  - numpy = 1.21.0
   - pytorch = 1.8.1
   - sympy = 1.8
-  - pandas = 1.2.4
+  - pandas = 1.2.5
   - cudatoolkit = 11.1.1
   - jupyterlab = 3.0.16
