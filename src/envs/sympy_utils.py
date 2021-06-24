@@ -10,7 +10,7 @@ from logging import getLogger
 import sympy as sp
 from sympy.parsing.sympy_parser import parse_expr
 
-from ..utils import timeout, TimeoutError
+from ..utils import timeout, TimeoutErrorException
 
 logger = getLogger()
 
@@ -30,7 +30,7 @@ def simplify(f, seconds):
                 return f
             else:
                 return f2
-        except TimeoutError:
+        except TimeoutErrorException:
             return f
         except Exception as e:
             logger.warning(f"{type(e).__name__} exception when simplifying {f}")

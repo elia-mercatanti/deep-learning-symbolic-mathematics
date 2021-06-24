@@ -10,9 +10,10 @@ import time
 from datetime import timedelta
 
 
-class LogFormatter():
+class LogFormatter(logging.Formatter):
 
     def __init__(self):
+        super().__init__()
         self.start_time = time.time()
 
     def format(self, record):
@@ -36,6 +37,12 @@ def create_logger(filepath, rank):
     # create log formatter
     log_formatter = LogFormatter()
 
+    # create logger and set level to debug
+    logger = logging.getLogger()
+    logger.handlers = []
+    logger.setLevel(logging.DEBUG)
+    logger.propagate = False
+
     # create file handler and set level to debug
     if filepath is not None:
         if rank > 0:
@@ -43,19 +50,12 @@ def create_logger(filepath, rank):
         file_handler = logging.FileHandler(filepath, "a")
         file_handler.setLevel(logging.DEBUG)
         file_handler.setFormatter(log_formatter)
+        logger.addHandler(file_handler)
 
     # create console handler and set level to info
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.INFO)
     console_handler.setFormatter(log_formatter)
-
-    # create logger and set level to debug
-    logger = logging.getLogger()
-    logger.handlers = []
-    logger.setLevel(logging.DEBUG)
-    logger.propagate = False
-    if filepath is not None:
-        logger.addHandler(file_handler)
     logger.addHandler(console_handler)
 
     # reset logger elapsed time

@@ -31,9 +31,8 @@ def build_modules(env, params):
     """
     Build modules.
     """
-    modules = {}
-    modules['encoder'] = TransformerModel(params, env.id2word, is_encoder=True, with_output=False)
-    modules['decoder'] = TransformerModel(params, env.id2word, is_encoder=False, with_output=True)
+    modules = {'encoder': TransformerModel(params, env.id2word, is_encoder=True, with_output=False),
+               'decoder': TransformerModel(params, env.id2word, is_encoder=False, with_output=True)}
 
     # reload pretrained modules
     if params.reload_model != '':

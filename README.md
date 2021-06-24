@@ -5,7 +5,6 @@
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=elia-mercatanti_deep-learning-symbolic-mathematics&metric=bugs)](https://sonarcloud.io/dashboard?id=elia-mercatanti_deep-learning-symbolic-mathematics)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=elia-mercatanti_deep-learning-symbolic-mathematics&metric=code_smells)](https://sonarcloud.io/dashboard?id=elia-mercatanti_deep-learning-symbolic-mathematics)
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=elia-mercatanti_deep-learning-symbolic-mathematics&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=elia-mercatanti_deep-learning-symbolic-mathematics)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=elia-mercatanti_deep-learning-symbolic-mathematics&metric=security_rating)](https://sonarcloud.io/dashboard?id=elia-mercatanti_deep-learning-symbolic-mathematics)
 
 Original Paper: [Deep Learning for Symbolic Mathematics](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/blob/master/paper/deep-learning-symbolic-mathematics-paper.pdf) (ICLR 2020).
 
@@ -41,13 +40,17 @@ We also provide:
       with an interactive demo of the model on function integration.
       
 ## Dependencies
-
-- [Python 3](https://www.python.org/)
-- [NumPy](http://www.numpy.org/)
-- [SymPy](https://www.sympy.org/)
-- [Numexpr](https://github.com/pydata/numexpr)
-- [PyTorch](http://pytorch.org/) (tested on version 1.3)
-- [Apex](https://github.com/nvidia/apex) (for fp16 training)
+- Required:
+    - [Python 3](https://www.python.org/)
+    - [NumPy](http://www.numpy.org/)
+    - [Numexpr](https://github.com/pydata/numexpr)
+    - [SymPy](https://www.sympy.org/)
+    - [PyTorch](http://pytorch.org/)
+- Additional:
+    - [Cuda Toolkit](https://developer.nvidia.com/cuda-toolkit) (for supporting GPUs)
+    - [Nvidia Apex](https://github.com/nvidia/apex) (for fp16 training on GPUs)
+    - [JupyterLab](https://jupyter.org) (for jupyter notebooks)
+    - [Pandas](https://pandas.pydata.org/) (for displaying results)
 
 ## Datasets and Trained Models
 
@@ -82,7 +85,7 @@ and for differential equations:
 All accuracies above are given using a beam search of size 10. Note that these datasets and models slightly differ from
 the ones used in the paper.
 
-## Data generation
+## Data Generation
 
 If you want to use your own dataset / generator, it is possible to train a model by generating data on the fly. However,
 the generation process can take a while, so we recommend to first generate data, and export it into a dataset that can

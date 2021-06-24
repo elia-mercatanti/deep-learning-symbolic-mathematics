@@ -6,3 +6,9 @@ datasets/
 
 ### Models ###
 models/
+
+### Experiments Dir ###
+experiments/
+
+### Jupyter Notebooks ###
+/jupyter-notebook/.ipynb_checkpoints/
