@@ -182,6 +182,10 @@ def main(parameters):
         exit()
 
     # training
+    training(evaluator, logger, parameters, trainer)
+
+
+def training(evaluator, logger, parameters, trainer):
     for _ in range(parameters.max_epoch):
 
         logger.info("============ Starting epoch %i ... ============" % trainer.epoch)

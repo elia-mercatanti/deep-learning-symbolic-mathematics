@@ -38,6 +38,7 @@ class Trainer(object):
         self.modules = modules
         self.params = params
         self.env = env
+        self.n_equations = 0
 
         # epoch / iteration size
         self.epoch_size = params.epoch_size
