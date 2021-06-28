@@ -179,7 +179,7 @@ class CharSPEnvironment(object):
         sp.Derivative: 'derivative',
     }
 
-    OPERATORS = {
+    OPERATORS_ARITY = {
         # Elementary functions
         'add': 2,
         'sub': 2,
@@ -251,18 +251,18 @@ class CharSPEnvironment(object):
         assert self.precision >= 2
 
         # parse operators with their weights
-        self.operators = sorted(list(self.OPERATORS.keys()))
+        self.operators = sorted(list(self.OPERATORS_ARITY.keys()))
         ops = params.operators.split(',')
         ops = sorted([x.split(':') for x in ops])
-        assert len(ops) >= 1 and all(o in self.OPERATORS for o, _ in ops)
+        assert len(ops) >= 1 and all(o in self.OPERATORS_ARITY for o, _ in ops)
         self.all_ops = [o for o, _ in ops]
-        self.una_ops = [o for o, _ in ops if self.OPERATORS[o] == 1]
-        self.bin_ops = [o for o, _ in ops if self.OPERATORS[o] == 2]
+        self.una_ops = [o for o, _ in ops if self.OPERATORS_ARITY[o] == 1]
+        self.bin_ops = [o for o, _ in ops if self.OPERATORS_ARITY[o] == 2]
         logger.info(f"Unary operators: {self.una_ops}")
         logger.info(f"Binary operators: {self.bin_ops}")
         self.all_ops_probs = np.array([float(w) for _, w in ops]).astype(np.float64)
-        self.una_ops_probs = np.array([float(w) for o, w in ops if self.OPERATORS[o] == 1]).astype(np.float64)
-        self.bin_ops_probs = np.array([float(w) for o, w in ops if self.OPERATORS[o] == 2]).astype(np.float64)
+        self.una_ops_probs = np.array([float(w) for o, w in ops if self.OPERATORS_ARITY[o] == 1]).astype(np.float64)
+        self.bin_ops_probs = np.array([float(w) for o, w in ops if self.OPERATORS_ARITY[o] == 2]).astype(np.float64)
         self.all_ops_probs = self.all_ops_probs / self.all_ops_probs.sum()
         self.una_ops_probs = self.una_ops_probs / self.una_ops_probs.sum()
         self.bin_ops_probs = self.bin_ops_probs / self.bin_ops_probs.sum()
@@ -297,8 +297,8 @@ class CharSPEnvironment(object):
             self.elements = [str(i) for i in range(abs(self.int_base))]
         assert 1 <= self.n_variables <= len(self.variables)
         assert 0 <= self.n_coefficients <= len(self.coefficients)
-        assert all(k in self.OPERATORS for k in self.functions.keys())
-        assert all(v in self.OPERATORS for v in self.SYMPY_OPERATORS.values())
+        assert all(k in self.OPERATORS_ARITY for k in self.functions.keys())
+        assert all(v in self.OPERATORS_ARITY for v in self.SYMPY_OPERATORS.values())
 
         # SymPy elements
         self.local_dict = {}
@@ -529,13 +529,13 @@ class CharSPEnvironment(object):
             else:
                 op = rng.choice(self.bin_ops, p=self.bin_ops_probs)
 
-            nb_empty += self.OPERATORS[op] - 1 - skipped  # created empty nodes - skipped future leaves
-            t_leaves += self.OPERATORS[op] - 1  # update number of total leaves
+            nb_empty += self.OPERATORS_ARITY[op] - 1 - skipped  # created empty nodes - skipped future leaves
+            t_leaves += self.OPERATORS_ARITY[op] - 1  # update number of total leaves
             l_leaves += skipped  # update number of left leaves
 
             # update tree
             pos = [i for i, v in enumerate(stack) if v is None][l_leaves]
-            stack = stack[:pos] + [op] + [None for _ in range(self.OPERATORS[op])] + stack[pos + 1:]
+            stack = stack[:pos] + [op] + [None for _ in range(self.OPERATORS_ARITY[op])] + stack[pos + 1:]
 
         # sanity check
         assert len([1 for v in stack if v in self.all_ops]) == nb_total_ops
@@ -621,7 +621,7 @@ class CharSPEnvironment(object):
         if t in self.operators:
             args = []
             l1 = expr[1:]
-            for _ in range(self.OPERATORS[t]):
+            for _ in range(self.OPERATORS_ARITY[t]):
                 i1, l1 = self._prefix_to_infix(l1)
                 args.append(i1)
             return self.write_infix(t, args), l1
@@ -841,7 +841,7 @@ class CharSPEnvironment(object):
                 return None
 
             # skip when the number of operators is too far from expected
-            real_nb_ops = sum(1 if op in self.OPERATORS else 0 for op in f_prefix)
+            real_nb_ops = sum(1 if op in self.OPERATORS_ARITY else 0 for op in f_prefix)
             if real_nb_ops < nb_ops / 2:
                 return None
 
@@ -915,7 +915,7 @@ class CharSPEnvironment(object):
                 return None
 
             # skip when the number of operators is too far from expected
-            real_nb_ops = sum(1 if op in self.OPERATORS else 0 for op in F_prefix)
+            real_nb_ops = sum(1 if op in self.OPERATORS_ARITY else 0 for op in F_prefix)
             if real_nb_ops < nb_ops / 2:
                 return None
 
@@ -1040,7 +1040,8 @@ class CharSPEnvironment(object):
             self.PRIM_COUNT[0] += 1
             if self.PRIM_COUNT[1] % 100 == 0:
                 logger.info(
-                    f"PRIM_COUNT {self.PRIM_COUNT[0]} / {self.PRIM_COUNT[1]} = {100 * self.PRIM_COUNT[0] / self.PRIM_COUNT[1]}%")
+                    f"PRIM_COUNT {self.PRIM_COUNT[0]} / {self.PRIM_COUNT[1]} = "
+                    f"{100 * self.PRIM_COUNT[0] / self.PRIM_COUNT[1]}%")
 
             # simplify
             H = remove_root_constant_terms(H, x, 'add')
@@ -1133,7 +1134,7 @@ class CharSPEnvironment(object):
                 return None
 
             # skip when the number of operators in f is too far from expected
-            real_nb_ops = sum(1 if op in self.OPERATORS else 0 for op in expr_prefix)
+            real_nb_ops = sum(1 if op in self.OPERATORS_ARITY else 0 for op in expr_prefix)
             if real_nb_ops < nb_ops / 2:
                 return None
 
@@ -1179,7 +1180,8 @@ class CharSPEnvironment(object):
         except TimeoutErrorException:
             raise
         except (
-        ValueError, NotImplementedError, AttributeError, RecursionError, ValueErrorExpression, UnknownSymPyOperator):
+                ValueError, NotImplementedError, AttributeError, RecursionError, ValueErrorExpression,
+                UnknownSymPyOperator):
             return None
         except Exception as e:
             logger.error(
@@ -1241,7 +1243,7 @@ class CharSPEnvironment(object):
                 return None
 
             # skip when the number of operators in f is too far from expected
-            real_nb_ops = sum(1 if op in self.OPERATORS else 0 for op in expr_prefix)
+            real_nb_ops = sum(1 if op in self.OPERATORS_ARITY else 0 for op in expr_prefix)
             if real_nb_ops < nb_ops / 2:
                 return None
 
@@ -1298,7 +1300,8 @@ class CharSPEnvironment(object):
         except TimeoutErrorException:
             raise
         except (
-        ValueError, NotImplementedError, AttributeError, RecursionError, ValueErrorExpression, UnknownSymPyOperator):
+                ValueError, NotImplementedError, AttributeError, RecursionError, ValueErrorExpression,
+                UnknownSymPyOperator):
             return None
         except Exception as e:
             logger.error(
@@ -1439,7 +1442,7 @@ class EnvDataset(Dataset):
         Collate samples into a batch.
         """
         x, y = zip(*elements)
-        nb_ops = [sum(int(word in self.env.OPERATORS) for word in seq) for seq in x]
+        nb_ops = [sum(int(word in self.env.OPERATORS_ARITY) for word in seq) for seq in x]
         # for i in range(len(x)):
         #     print(self.env.prefix_to_infix(self.env.unclean_prefix(x[i])))
         #     print(self.env.prefix_to_infix(self.env.unclean_prefix(y[i])))
@@ -1460,7 +1463,8 @@ class EnvDataset(Dataset):
             self.env.worker_id = worker_id
             self.rng = np.random.RandomState([worker_id, self.global_rank, self.env_base_seed])
             logger.info(
-                f"Initialized random generator for worker {worker_id}, with seed {[worker_id, self.global_rank, self.env_base_seed]} (base seed={self.env_base_seed}).")
+                f"Initialized random generator for worker {worker_id}, with seed "
+                f"{[worker_id, self.global_rank, self.env_base_seed]} (base seed={self.env_base_seed}).")
 
     def get_worker_id(self):
         """
@@ -1530,7 +1534,8 @@ class EnvDataset(Dataset):
                 continue
             except Exception as e:
                 logger.error(
-                    "An unknown exception of type {0} occurred for worker {4} in line {1} for expression \"{2}\". Arguments:{3!r}.".format(
+                    "An unknown exception of type {0} occurred for worker {4} in line {1} for expression \"{2}\". "
+                    "Arguments:{3!r}.".format(
                         type(e).__name__, sys.exc_info()[-1].tb_lineno, 'F', e.args, self.get_worker_id()))
                 continue
         self.count += 1
