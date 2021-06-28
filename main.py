@@ -7,6 +7,7 @@
 
 import argparse
 import json
+import multiprocessing
 import secrets
 
 import numpy as np
@@ -86,7 +87,7 @@ def get_parser():
                                  help="Validation metrics")
     argument_parser.add_argument("--accumulate_gradients", type=int, default=1,
                                  help="Accumulate model gradients over N iterations (N times larger batch sizes)")
-    argument_parser.add_argument("--num_workers", type=int, default=8,
+    argument_parser.add_argument("--num_workers", type=int, default=multiprocessing.cpu_count(),
                                  help="Number of CPU workers for DataLoader")
     argument_parser.add_argument("--same_nb_ops_per_batch", type=bool_flag, default=False,
                                  help="Generate sequences with the same number of operators in batches.")
