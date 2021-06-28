@@ -1,6 +1,9 @@
 ### PyCharm ###
 .idea/
 
+### Python ###
+**/__pycache__/
+
 ### Datasets ###
 datasets/
 
@@ -11,4 +14,4 @@ models/
 experiments/
 
 ### Jupyter Notebooks ###
-/jupyter-notebook/.ipynb_checkpoints/
+jupyter-notebook/.ipynb_checkpoints/

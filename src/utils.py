@@ -17,7 +17,7 @@ import sys
 import time
 from functools import wraps, partial
 
-from logger import create_logger
+from .logger import create_logger
 
 FALSY_STRINGS = {'off', 'false', '0'}
 TRUTHY_STRINGS = {'on', 'true', '1'}
