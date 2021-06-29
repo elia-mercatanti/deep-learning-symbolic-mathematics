@@ -351,7 +351,7 @@ class TransformerModel(nn.Module):
 
         # generated sentences
         generated = src_len.new(max_len, bs)  # upcoming output
-        generated.fill_(self.pad_index)  # fill upcoming ouput with <PAD>
+        generated.fill_(self.pad_index)  # fill upcoming output with <PAD>
         generated[0].fill_(self.eos_index)  # we use <EOS> for <BOS> everywhere
 
         # positions
@@ -397,7 +397,7 @@ class TransformerModel(nn.Module):
             unfinished_sents.mul_(next_words.ne(self.eos_index).long())
             cur_len = cur_len + 1
 
-            # stop when there is a </s> in each sentence, or if we exceed the maximul length
+            # stop when there is a </s> in each sentence, or if we exceed the maximal length
             if unfinished_sents.max() == 0:
                 break
 
@@ -439,7 +439,7 @@ class TransformerModel(nn.Module):
 
         # generated sentences (batch with beam current hypotheses)
         generated = src_len.new(max_len, bs * beam_size)  # upcoming output
-        generated.fill_(self.pad_index)  # fill upcoming ouput with <PAD>
+        generated.fill_(self.pad_index)  # fill upcoming output with <PAD>
         generated[0].fill_(self.eos_index)  # we use <EOS> for <BOS> everywhere
 
         # generated hypotheses
