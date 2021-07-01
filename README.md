@@ -95,21 +95,21 @@ be used for training. This can easily be done by setting `--export_data true`:
 python main.py --export_data true
 
 ## Main Parameters
---batch_size 32
---cpu true
---exp_name prim_bwd_data
+--batch_size 32                # number of sentences per batch
+--cpu true                     # run on CPU
+--exp_name prim_bwd_data       # experiment name
 --num_workers 20               # number of processes
---tasks prim_bwd               # task (prim_fwd, prim_bwd, prim_ibp, ode1, ode2)
+--tasks prim_bwd               # type of task (prim_fwd, prim_bwd, prim_ibp, ode1, ode2)
 --env_base_seed -1             # generator seed (-1 for random seed)
 
 ## Generator Configuration
---n_variables 1                # number of variables (x, y, z)
+--n_variables 1                # number of variables in expressions (between 1 and 3) (x, y, z)
 --n_coefficients 0             # number of coefficients (a_0, a_1, a_2, ...)
---leaf_probs "0.75,0,0.25,0"   # leaf sampling probabilities
+--leaf_probs "0.75,0,0.25,0"   # leaf probabilities of being a variable, a coefficient, an integer, or a constant
 --max_ops 15                   # maximum number of operators (at generation, but can be much longer after derivation)
 --max_int 5                    # max value of sampled integers
---positive true                # sign of sampled integers
---max_len 512                  # maximum length of generated equations
+--positive true                # sign of sampled integers, do not sample negative numbers
+--max_len 512                  # maximum length of generated equations (maximum sequences length)
 
 ## Considered operators, with (unnormalized) sampling probabilities
 --operators "add:10,sub:3,mul:10,div:5,sqrt:4,pow2:4,pow3:2,pow4:1,pow5:1,ln:4,exp:4,sin:4,cos:4,tan:4,asin:1,acos:1,atan:1,sinh:1,cosh:1,tanh:1,asinh:1,acosh:1,atanh:1"
@@ -191,8 +191,8 @@ python main.py
 --fp16 true --amp 2     # float16 training
 
 ## dataset location
---tasks "prim_fwd"                                                    # task
---reload_data "prim_fwd,prim_fwd.train,prim_fwd.valid,prim_fwd.test"  # data location
+--tasks "prim_fwd"                                                    # type of task
+--reload_data "prim_fwd,prim_fwd.train,prim_fwd.valid,prim_fwd.test"  # data locations
 --reload_size 40000000                                                # training set size
 
 ## model parameters
