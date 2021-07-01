@@ -6,11 +6,11 @@
 #
 
 from logging import getLogger
-
 import sympy as sp
 from sympy.parsing.sympy_parser import parse_expr
 
-from ..utils import timeout, TimeoutErrorException
+from ..utils import timeout, TimeoutError
+
 
 logger = getLogger()
 
@@ -20,7 +20,6 @@ def simplify(f, seconds):
     Simplify an expression.
     """
     assert seconds > 0
-
     @timeout(seconds)
     def _simplify(f):
         try:
@@ -30,12 +29,11 @@ def simplify(f, seconds):
                 return f
             else:
                 return f2
-        except TimeoutErrorException:
+        except TimeoutError:
             return f
         except Exception as e:
             logger.warning(f"{type(e).__name__} exception when simplifying {f}")
             return f
-
     return _simplify(f)
 
 
@@ -239,8 +237,7 @@ def clean_degree2_solution(expr, x, a8, a9):
                 counts = count_occurrences2(small)
                 if counts[a] == 1 and a in small.args:
                     if x in small.free_symbols:
-                        expr = expr.subs(small,
-                                         small.func(*[arg for arg in small.args if arg == a or x in arg.free_symbols]))
+                        expr = expr.subs(small, small.func(*[arg for arg in small.args if arg == a or x in arg.free_symbols]))
                     else:
                         expr = expr.subs(small, a)
         if expr == last:
@@ -305,7 +302,6 @@ if __name__ == '__main__':
 
     failed = 0
 
-
     #
     # count occurrences
     #
@@ -318,7 +314,6 @@ if __name__ == '__main__':
             return False
         return True
 
-
     def test_count_occurrences2(infix, _counts):
         expr = parse_expr(infix, local_dict=local_dict)
         counts = count_occurrences2(expr)
@@ -327,7 +322,6 @@ if __name__ == '__main__':
             print(f"Expression {infix} - Expected: {_counts} - Returned: {counts})")
             return False
         return True
-
 
     tests = [
         ('2', {2: 1}),
@@ -341,7 +335,6 @@ if __name__ == '__main__':
         failed += not test_count_occurrences(*test)
         failed += not test_count_occurrences2(*test)
 
-
     #
     # remove root constant terms
     #
@@ -351,45 +344,42 @@ if __name__ == '__main__':
         ref_output = parse_expr(ref_output, local_dict=local_dict)
         output = remove_root_constant_terms(expr, variables, mode)
         if output != ref_output:
-            print(
-                f"Error when removing constant on expression {infix} with mode {mode} - Expected: {ref_output} - Returned: {output}")
+            print(f"Error when removing constant on expression {infix} with mode {mode} - Expected: {ref_output} - Returned: {output}")
             return False
         return True
 
-
     tests = [
-        ('x', 'x', 'add'),
-        ('x + 2', 'x', 'add'),
-        ('a0*x + 2', 'a0*x', 'add'),
-        ('x + exp(2)', 'x', 'add'),
-        ('x + exp(2) * x', 'x + exp(2) * x', 'add'),
-        ('x + 2 + a0', 'x', 'add'),
-        ('x + 2 + a0 + z', 'x + z', 'add'),
-        ('x + z', 'x + z', 'add'),
-        ('x + 2', 'x + 2', 'mul'),
-        ('x + z', 'x + z', 'mul'),
-        ('x + z', 'x + z', 'mul'),
-        ('a0 * x', 'x', 'mul'),
-        ('(1 / sqrt(a0)) * x', 'x', 'mul'),
-        ('(3 / sqrt(a0)) * x', 'x', 'mul'),
-        ('(3*a0/a1) * sqrt(x)', 'sqrt(x)', 'mul'),
-        ('exp(x) / sqrt(a0 + 1)', 'exp(x)', 'mul'),
-        ('x + z', 'x + z', 'mul'),
-        ('x + z', 'x + z', 'mul'),
-        ('x + 2', 'x + 2', 'pow'),
-        ('(x + 2) ** 2', 'x + 2', 'pow'),
-        ('(x + 2) ** a0', 'x + 2', 'pow'),
-        ('(x + 2) ** (a0 + 2)', 'x + 2', 'pow'),
-        ('(x + 2) ** (y + 2)', '(x + 2) ** (y + 2)', 'pow'),
-        ('2 ** (x + 2)', 'x + 2', 'pow'),
-        ('a0 ** (x + 2)', 'x + 2', 'pow'),
-        ('(a0 + 2) ** (x + 2)', 'x + 2', 'pow'),
-        ('(y + 2) ** (x + 2)', '(y + 2) ** (x + 2)', 'pow'),
+        ('x',                     'x',                  'add'),
+        ('x + 2',                 'x',                  'add'),
+        ('a0*x + 2',              'a0*x',               'add'),
+        ('x + exp(2)',            'x',                  'add'),
+        ('x + exp(2) * x',        'x + exp(2) * x',     'add'),
+        ('x + 2 + a0',            'x',                  'add'),
+        ('x + 2 + a0 + z',        'x + z',              'add'),
+        ('x + z',                 'x + z',              'add'),
+        ('x + 2',                 'x + 2',              'mul'),
+        ('x + z',                 'x + z',              'mul'),
+        ('x + z',                 'x + z',              'mul'),
+        ('a0 * x',                'x',                  'mul'),
+        ('(1 / sqrt(a0)) * x',    'x',                  'mul'),
+        ('(3 / sqrt(a0)) * x',    'x',                  'mul'),
+        ('(3*a0/a1) * sqrt(x)',   'sqrt(x)',            'mul'),
+        ('exp(x) / sqrt(a0 + 1)', 'exp(x)',             'mul'),
+        ('x + z',                 'x + z',              'mul'),
+        ('x + z',                 'x + z',              'mul'),
+        ('x + 2',                 'x + 2',              'pow'),
+        ('(x + 2) ** 2',          'x + 2',              'pow'),
+        ('(x + 2) ** a0',         'x + 2',              'pow'),
+        ('(x + 2) ** (a0 + 2)',   'x + 2',              'pow'),
+        ('(x + 2) ** (y + 2)',    '(x + 2) ** (y + 2)', 'pow'),
+        ('2 ** (x + 2)',          'x + 2',              'pow'),
+        ('a0 ** (x + 2)',         'x + 2',              'pow'),
+        ('(a0 + 2) ** (x + 2)',   'x + 2',              'pow'),
+        ('(y + 2) ** (x + 2)',    '(y + 2) ** (x + 2)', 'pow'),
     ]
 
     for test in tests:
         failed += not test_remove_root_constant_terms(*test, variables=[x, y, z])
-
 
     #
     # extract non-constant sub-tree
@@ -400,27 +390,24 @@ if __name__ == '__main__':
         ref_output = parse_expr(ref_output, local_dict=local_dict)
         output = extract_non_constant_subtree(expr, [x, y, z])
         if output != ref_output:
-            print(
-                f"Error when extracting non-constant sub-tree expression {infix} - Expected: {ref_output} - Returned: {output}")
+            print(f"Error when extracting non-constant sub-tree expression {infix} - Expected: {ref_output} - Returned: {output}")
             return False
         return True
 
-
     tests = [
-        ('x + sqrt(a0 * x)', 'x + sqrt(a0 * x)'),
-        ('x + sqrt(a0 * x) + 3', 'x + sqrt(a0 * x)'),
-        ('x + sqrt(a0 * x) + a1', 'x + sqrt(a0 * x)'),
-        ('x + sqrt(a0 * x) + a0', 'x + sqrt(a0 * x) + a0'),
-        ('x + sqrt(a0 * x) + 2 * a0', 'x + sqrt(a0 * x) + 2 * a0'),
-        ('a0 * x + x + a0', 'a0 * x + x + a0'),
-        ('(x + sqrt(a0 * x)) ** 2', 'x + sqrt(a0 * x)'),
-        ('exp(x + sqrt(a0 * x))', 'x + sqrt(a0 * x)'),
-        ('exp(x + sqrt(a0 * x))', 'x + sqrt(a0 * x)'),
+        ('x + sqrt(a0 * x)'          , 'x + sqrt(a0 * x)'),
+        ('x + sqrt(a0 * x) + 3'      , 'x + sqrt(a0 * x)'),
+        ('x + sqrt(a0 * x) + a1'     , 'x + sqrt(a0 * x)'),
+        ('x + sqrt(a0 * x) + a0'     , 'x + sqrt(a0 * x) + a0'),
+        ('x + sqrt(a0 * x) + 2 * a0' , 'x + sqrt(a0 * x) + 2 * a0'),
+        ('a0 * x + x + a0'           , 'a0 * x + x + a0'),
+        ('(x + sqrt(a0 * x)) ** 2'   , 'x + sqrt(a0 * x)'),
+        ('exp(x + sqrt(a0 * x))'     , 'x + sqrt(a0 * x)'),
+        ('exp(x + sqrt(a0 * x))'     , 'x + sqrt(a0 * x)'),
     ]
 
     for test in tests:
         failed += not test_extract_non_constant_subtree(*test)
-
 
     #
     # re-index coefficients
@@ -431,11 +418,9 @@ if __name__ == '__main__':
         ref_output = parse_expr(ref_output, local_dict=local_dict)
         output = reindex_coefficients(expr, [local_dict[f'a{i}'] for i in range(10)])
         if output != ref_output:
-            print(
-                f"Error when re-indexing coefficients on expression {infix} - Expected: {ref_output} - Returned: {output}")
+            print(f"Error when re-indexing coefficients on expression {infix} - Expected: {ref_output} - Returned: {output}")
             return False
         return True
-
 
     tests = [
         ('a0', 'a0'),
@@ -454,7 +439,6 @@ if __name__ == '__main__':
     for test in tests:
         failed += not test_reindex_coefficients(*test)
 
-
     #
     # reduce coefficients
     #
@@ -464,32 +448,29 @@ if __name__ == '__main__':
         ref_output = parse_expr(ref_output, local_dict=local_dict)
         output = reduce_coefficients(expr, [x, y, z], [local_dict[f'a{i}'] for i in range(10)])
         if output != ref_output:
-            print(
-                f"Error when reducing coefficients on expression {infix} - Expected: {ref_output} - Returned: {output}")
+            print(f"Error when reducing coefficients on expression {infix} - Expected: {ref_output} - Returned: {output}")
             return False
         return True
 
-
     tests = [
-        ('a0 + 1', 'a0'),
-        ('a0 + x', 'a0 + x'),
-        ('1 / sqrt(a0)', 'a0'),
-        ('1 / (cos(x + sqrt(a0)))', '1 / (cos(x + a0))'),
-        ('a0 / (cos(x + sqrt(a0)))', 'a0 / (cos(x + sqrt(a0)))'),
-        ('sqrt(a0) / (cos(x + sqrt(a0)))', 'a0 / (cos(x + a0))'),
-        ('ln(a0) / (cos(x + sqrt(a0)))', 'ln(a0 ** 2) / (cos(x + a0))'),
-        ('ln(a1) / (cos(x + sqrt(a0)))', 'a1 / (cos(x + a0))'),
-        ('sin(a1) * cos(a0 ** 2 + x)', 'a1 * cos(a0 + x)'),
-        ('sin(a0) * cos(a0 ** 2 + x)', 'sin(sqrt(a0)) * cos(a0 + x)'),
-        ('sin(a0 + x) * cos(a0 ** 2 + x)', 'sin(sqrt(a0) + x) * cos(a0 + x)'),
+        ('a0 + 1',                          'a0'),
+        ('a0 + x',                          'a0 + x'),
+        ('1 / sqrt(a0)',                    'a0'),
+        ('1 / (cos(x + sqrt(a0)))',         '1 / (cos(x + a0))'),
+        ('a0 / (cos(x + sqrt(a0)))',        'a0 / (cos(x + sqrt(a0)))'),
+        ('sqrt(a0) / (cos(x + sqrt(a0)))',  'a0 / (cos(x + a0))'),
+        ('ln(a0) / (cos(x + sqrt(a0)))',    'ln(a0 ** 2) / (cos(x + a0))'),
+        ('ln(a1) / (cos(x + sqrt(a0)))',    'a1 / (cos(x + a0))'),
+        ('sin(a1) * cos(a0 ** 2 + x)',      'a1 * cos(a0 + x)'),
+        ('sin(a0) * cos(a0 ** 2 + x)',      'sin(sqrt(a0)) * cos(a0 + x)'),
+        ('sin(a0 + x) * cos(a0 ** 2 + x)',  'sin(sqrt(a0) + x) * cos(a0 + x)'),
         ('sin(a0 + x) * cos(a0 ** 2 + a1)', 'sin(a0 + x) * a1'),
         ('sin(a1 + x) * cos(a1 ** 2 + a0)', 'sin(a1 + x) * a0'),
-        ('sin(sqrt(a0) + x) * a1', 'sin(a0 + x) * a1')
+        ('sin(sqrt(a0) + x) * a1',          'sin(a0 + x) * a1')
     ]
 
     for test in tests:
         failed += not test_reduce_coefficients(*test)
-
 
     #
     # simplify constants with coefficients
@@ -500,11 +481,9 @@ if __name__ == '__main__':
         ref_output = parse_expr(ref_output, local_dict=local_dict)
         output = simplify_const_with_coeff(expr, coeff)
         if output != ref_output:
-            print(
-                f"Error when simplifying constants with coefficient {coeff} on expression {infix} - Expected: {ref_output} - Returned: {output}")
+            print(f"Error when simplifying constants with coefficient {coeff} on expression {infix} - Expected: {ref_output} - Returned: {output}")
             return False
         return True
-
 
     tests = [
         ('sqrt(5) * y * x ** (3 / 2) + 5', 'sqrt(5) * y * x ** (3 / 2) + 5', a0),

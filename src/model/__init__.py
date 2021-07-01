@@ -5,12 +5,12 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-import os
 from logging import getLogger
-
+import os
 import torch
 
 from .transformer import TransformerModel
+
 
 logger = getLogger()
 
@@ -31,8 +31,9 @@ def build_modules(env, params):
     """
     Build modules.
     """
-    modules = {'encoder': TransformerModel(params, env.id2word, is_encoder=True, with_output=False),
-               'decoder': TransformerModel(params, env.id2word, is_encoder=False, with_output=True)}
+    modules = {}
+    modules['encoder'] = TransformerModel(params, env.id2word, is_encoder=True, with_output=False)
+    modules['decoder'] = TransformerModel(params, env.id2word, is_encoder=False, with_output=True)
 
     # reload pretrained modules
     if params.reload_model != '':

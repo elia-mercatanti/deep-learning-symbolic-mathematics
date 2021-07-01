@@ -5,9 +5,9 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-import inspect
-import math
 import re
+import math
+import inspect
 
 import torch
 from torch import optim
@@ -101,7 +101,6 @@ class AdamInverseSqrtWithWarmup(Adam):
     where
         decay_factor = lr * sqrt(warmup_updates)
     """
-
     def __init__(self, params, lr=1e-3, betas=(0.9, 0.999), eps=1e-8,
                  weight_decay=0, warmup_updates=4000, warmup_init_lr=1e-7,
                  exp_factor=0.5):
@@ -156,7 +155,6 @@ class AdamCosineWithWarmup(Adam):
     range and ``t_i`` is the current period range, which is scaled by ``t_mul``
     after every iteration.
     """
-
     def __init__(self, params, lr=1e-3, betas=(0.9, 0.999), eps=1e-8,
                  weight_decay=0, warmup_updates=4000, warmup_init_lr=1e-7,
                  min_lr=1e-9, init_period=1000000, period_mult=1, lr_shrink=0.75):

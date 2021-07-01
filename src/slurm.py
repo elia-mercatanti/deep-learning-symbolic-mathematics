@@ -5,19 +5,19 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-import os
-import signal
-import socket
-import subprocess
-import sys
 from logging import getLogger
-
+import os
+import sys
 import torch
+import socket
+import signal
+import subprocess
+
 
 logger = getLogger()
 
 
-def sig_handler(signum):
+def sig_handler(signum, frame):
     logger.warning("Signal handler called with signal " + str(signum))
     prod_id = int(os.environ['SLURM_PROCID'])
     logger.warning("Host: %s - Global rank: %i" % (socket.gethostname(), prod_id))
@@ -29,7 +29,7 @@ def sig_handler(signum):
     sys.exit(-1)
 
 
-def term_handler(signum):
+def term_handler(signum, frame):
     logger.warning("Signal handler called with signal " + str(signum))
     logger.warning("Bypassing SIGTERM.")
 
@@ -59,19 +59,19 @@ def init_distributed_mode(params):
     # SLURM job
     if params.is_slurm_job:
 
-        assert params.local_rank == -1  # on the cluster, this is handled by SLURM
+        assert params.local_rank == -1   # on the cluster, this is handled by SLURM
 
-        slurm_variables = [
+        SLURM_VARIABLES = [
             'SLURM_JOB_ID',
             'SLURM_JOB_NODELIST', 'SLURM_JOB_NUM_NODES', 'SLURM_NTASKS', 'SLURM_TASKS_PER_NODE',
             'SLURM_MEM_PER_NODE', 'SLURM_MEM_PER_CPU',
             'SLURM_NODEID', 'SLURM_PROCID', 'SLURM_LOCALID', 'SLURM_TASK_PID'
         ]
 
-        prefix = "%i - " % int(os.environ['SLURM_PROCID'])
-        for name in slurm_variables:
+        PREFIX = "%i - " % int(os.environ['SLURM_PROCID'])
+        for name in SLURM_VARIABLES:
             value = os.environ.get(name, None)
-            print(prefix + "%s: %s" % (name, str(value)))
+            print(PREFIX + "%s: %s" % (name, str(value)))
 
         # # job ID
         # params.job_id = os.environ['SLURM_JOB_ID']
@@ -92,8 +92,8 @@ def init_distributed_mode(params):
         hostnames = subprocess.check_output(['scontrol', 'show', 'hostnames', os.environ['SLURM_JOB_NODELIST']])
         params.master_addr = hostnames.split()[0].decode('utf-8')
         assert 10001 <= params.master_port <= 20000 or params.world_size == 1
-        print(prefix + "Master address: %s" % params.master_addr)
-        print(prefix + "Master port   : %i" % params.master_port)
+        print(PREFIX + "Master address: %s" % params.master_addr)
+        print(PREFIX + "Master port   : %i" % params.master_port)
 
         # set environment variables for 'env://'
         os.environ['MASTER_ADDR'] = params.master_addr
@@ -138,17 +138,17 @@ def init_distributed_mode(params):
     params.multi_gpu = params.world_size > 1
 
     # summary
-    prefix = "%i - " % params.global_rank
-    print(prefix + "Number of nodes: %i" % params.n_nodes)
-    print(prefix + "Node ID        : %i" % params.node_id)
-    print(prefix + "Local rank     : %i" % params.local_rank)
-    print(prefix + "Global rank    : %i" % params.global_rank)
-    print(prefix + "World size     : %i" % params.world_size)
-    print(prefix + "GPUs per node  : %i" % params.n_gpu_per_node)
-    print(prefix + "Master         : %s" % str(params.is_master))
-    print(prefix + "Multi-node     : %s" % str(params.multi_node))
-    print(prefix + "Multi-GPU      : %s" % str(params.multi_gpu))
-    print(prefix + "Hostname       : %s" % socket.gethostname())
+    PREFIX = "%i - " % params.global_rank
+    print(PREFIX + "Number of nodes: %i" % params.n_nodes)
+    print(PREFIX + "Node ID        : %i" % params.node_id)
+    print(PREFIX + "Local rank     : %i" % params.local_rank)
+    print(PREFIX + "Global rank    : %i" % params.global_rank)
+    print(PREFIX + "World size     : %i" % params.world_size)
+    print(PREFIX + "GPUs per node  : %i" % params.n_gpu_per_node)
+    print(PREFIX + "Master         : %s" % str(params.is_master))
+    print(PREFIX + "Multi-node     : %s" % str(params.multi_node))
+    print(PREFIX + "Multi-GPU      : %s" % str(params.multi_gpu))
+    print(PREFIX + "Hostname       : %s" % socket.gethostname())
 
     # set GPU device
     if not params.cpu:
@@ -156,6 +156,7 @@ def init_distributed_mode(params):
 
     # initialize multi-GPU
     if params.multi_gpu:
+
         # http://pytorch.apachecn.org/en/0.3.0/distributed.html#environment-variable-initialization
         # 'env://' will read these environment variables:
         # MASTER_PORT - required; has to be a free port on machine with rank 0
