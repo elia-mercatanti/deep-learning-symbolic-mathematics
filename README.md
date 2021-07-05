@@ -1,10 +1,5 @@
 # Deep Learning for Symbolic Mathematics
 [![Python Package using Conda on Linux](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/actions/workflows/conda-linux.yml/badge.svg)](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/actions/workflows/conda-linux.yml)
-[![Python Package using Conda on Windows](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/actions/workflows/conda-windows.yml/badge.svg)](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/actions/workflows/conda-windows.yml)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=elia-mercatanti_deep-learning-symbolic-mathematics&metric=alert_status)](https://sonarcloud.io/dashboard?id=elia-mercatanti_deep-learning-symbolic-mathematics)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=elia-mercatanti_deep-learning-symbolic-mathematics&metric=bugs)](https://sonarcloud.io/dashboard?id=elia-mercatanti_deep-learning-symbolic-mathematics)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=elia-mercatanti_deep-learning-symbolic-mathematics&metric=code_smells)](https://sonarcloud.io/dashboard?id=elia-mercatanti_deep-learning-symbolic-mathematics)
-[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=elia-mercatanti_deep-learning-symbolic-mathematics&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=elia-mercatanti_deep-learning-symbolic-mathematics)
 
 Original Paper: [Deep Learning for Symbolic Mathematics](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/blob/master/paper/deep-learning-symbolic-mathematics-paper.pdf) (ICLR 2020).
 
