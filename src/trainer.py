@@ -5,14 +5,13 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-import io
 import os
+import io
 import re
 import sys
 import time
-from collections import OrderedDict
 from logging import getLogger
-
+from collections import OrderedDict
 import numpy as np
 import torch
 from torch import nn
@@ -24,10 +23,12 @@ from .utils import to_cuda
 if torch.cuda.is_available():
     import apex
 
+
 logger = getLogger()
 
 
 class Trainer(object):
+
     EQUATIONS = {}
 
     def __init__(self, modules, env, params):
@@ -57,9 +58,7 @@ class Trainer(object):
         if params.multi_gpu and params.amp == -1:
             logger.info("Using nn.parallel.DistributedDataParallel ...")
             for k in self.modules.keys():
-                self.modules[k] = nn.parallel.DistributedDataParallel(self.modules[k], device_ids=[params.local_rank],
-                                                                      output_device=params.local_rank,
-                                                                      broadcast_buffers=True)
+                self.modules[k] = nn.parallel.DistributedDataParallel(self.modules[k], device_ids=[params.local_rank], output_device=params.local_rank, broadcast_buffers=True)
 
         # set optimizers
         self.set_optimizers()
@@ -127,8 +126,7 @@ class Trainer(object):
             assert params.export_data is False
             s = [x.split(',') for x in params.reload_data.split(';') if len(x) > 0]
             assert len(s) >= 1 and all(len(x) == 4 for x in s) and len(s) == len(set([x[0] for x in s]))
-            self.data_path = {task: (train_path, valid_path, test_path) for task, train_path, valid_path, test_path in
-                              s}
+            self.data_path = {task: (train_path, valid_path, test_path) for task, train_path, valid_path, test_path in s}
             assert all(all(os.path.isfile(path) for path in paths) for paths in self.data_path.values())
             for task in self.env.TRAINING_TASKS:
                 assert (task in self.data_path) == (task in params.tasks)
@@ -369,8 +367,7 @@ class Trainer(object):
         End the epoch.
         """
         # stop if the stopping criterion has not improved after a certain number of epochs
-        if self.stopping_criterion is not None and (
-                self.params.is_master or not self.stopping_criterion[0].endswith('_mt_bleu')):
+        if self.stopping_criterion is not None and (self.params.is_master or not self.stopping_criterion[0].endswith('_mt_bleu')):
             metric, biggest = self.stopping_criterion
             assert metric in scores, metric
             factor = 1 if biggest else -1
@@ -399,8 +396,7 @@ class Trainer(object):
             batch = next(self.dataloader[task])
         except Exception as e:
             logger.error("An unknown exception of type {0} occurred in line {1} when fetching batch. "
-                         "Arguments:{2!r}. Restarting ...".format(type(e).__name__, sys.exc_info()[-1].tb_lineno,
-                                                                  e.args))
+                         "Arguments:{2!r}. Restarting ...".format(type(e).__name__, sys.exc_info()[-1].tb_lineno, e.args))
             if self.params.is_slurm_job:
                 if int(os.environ['SLURM_PROCID']) == 0:
                     logger.warning("Requeuing job " + os.environ['SLURM_JOB_ID'])

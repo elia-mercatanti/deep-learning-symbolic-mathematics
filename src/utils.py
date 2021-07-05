@@ -5,19 +5,22 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-import argparse
-import errno
-import math
 import os
+import re
+import sys
+import math
+import time
 import pickle
 import random
-import re
+import argparse
+import subprocess
+
+import errno
 import signal
-import sys
-import time
 from functools import wraps, partial
 
-from logger import create_logger
+from .logger import create_logger
+
 
 FALSY_STRINGS = {'off', 'false', '0'}
 TRUTHY_STRINGS = {'on', 'true', '1'}
@@ -66,6 +69,7 @@ def initialize_exp(params):
             else:
                 command.append("'%s'" % x)
     command = ' '.join(command)
+    params.command = command + ' --exp_id "%s"' % params.exp_id
 
     # check experiment name
     assert len(params.exp_name.strip()) > 0
@@ -90,38 +94,30 @@ def get_dump_path(params):
     # create the sweep path if it does not exist
     sweep_path = os.path.join(params.dump_path, params.exp_name)
     if not os.path.exists(sweep_path):
-        os.makedirs(sweep_path)
+        subprocess.Popen("mkdir -p %s" % sweep_path, shell=True).wait()
 
     # create an ID for the job if it is not given in the parameters.
+    # if we run on the cluster, the job ID is the one of Chronos.
+    # otherwise, it is randomly generated
     if params.exp_id == '':
-        create_job_id(params, sweep_path)
+        chronos_job_id = os.environ.get('CHRONOS_JOB_ID')
+        slurm_job_id = os.environ.get('SLURM_JOB_ID')
+        assert chronos_job_id is None or slurm_job_id is None
+        exp_id = chronos_job_id if chronos_job_id is not None else slurm_job_id
+        if exp_id is None:
+            chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
+            while True:
+                exp_id = ''.join(random.choice(chars) for _ in range(10))
+                if not os.path.isdir(os.path.join(sweep_path, exp_id)):
+                    break
+        else:
+            assert exp_id.isdigit()
+        params.exp_id = exp_id
 
     # create the dump folder / update parameters
-    params.dump_path = os.path.realpath(os.path.join(sweep_path, params.exp_id))
+    params.dump_path = os.path.join(sweep_path, params.exp_id)
     if not os.path.isdir(params.dump_path):
-        os.makedirs(params.dump_path)
-
-
-def create_job_id(params, sweep_path):
-    """
-    Create an ID for the job if it is not given in the parameters.
-
-    If we run on the cluster, the job ID is the one of Chronos.
-    otherwise, it is randomly generated
-    """
-    chronos_job_id = os.environ.get('CHRONOS_JOB_ID')
-    slurm_job_id = os.environ.get('SLURM_JOB_ID')
-    assert chronos_job_id is None or slurm_job_id is None
-    exp_id = chronos_job_id if chronos_job_id is not None else slurm_job_id
-    if exp_id is None:
-        chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
-        while True:
-            exp_id = ''.join(random.choice(chars) for _ in range(10))
-            if not os.path.isdir(os.path.join(sweep_path, exp_id)):
-                break
-    else:
-        assert exp_id.isdigit()
-    params.exp_id = exp_id
+        subprocess.Popen("mkdir -p %s" % params.dump_path, shell=True).wait()
 
 
 def to_cuda(*args):
@@ -133,21 +129,22 @@ def to_cuda(*args):
     return [None if x is None else x.cuda() for x in args]
 
 
-class TimeoutErrorException(Exception):
+class TimeoutError(BaseException):
     pass
 
 
 def timeout(seconds=10, error_message=os.strerror(errno.ETIME)):
+
     def decorator(func):
 
         def _handle_timeout(repeat_id, signum, frame):
             # logger.warning(f"Catched the signal ({repeat_id}) Setting signal handler {repeat_id + 1}")
-            signal.signal(signal.SIGTERM, partial(_handle_timeout, repeat_id + 1))
+            signal.signal(signal.SIGALRM, partial(_handle_timeout, repeat_id + 1))
             signal.alarm(seconds)
-            raise TimeoutErrorException(error_message)
+            raise TimeoutError(error_message)
 
         def wrapper(*args, **kwargs):
-            old_signal = signal.signal(signal.SIGTERM, partial(_handle_timeout, 0))
+            old_signal = signal.signal(signal.SIGALRM, partial(_handle_timeout, 0))
             old_time_left = signal.alarm(seconds)
             assert type(old_time_left) is int and old_time_left >= 0
             if 0 < old_time_left < seconds:  # do not exceed previous timer
@@ -160,7 +157,7 @@ def timeout(seconds=10, error_message=os.strerror(errno.ETIME)):
                     signal.alarm(0)
                 else:
                     sub = time.time() - start_time
-                    signal.signal(signal.SIGTERM, old_signal)
+                    signal.signal(signal.SIGALRM, old_signal)
                     signal.alarm(max(0, math.ceil(old_time_left - sub)))
             return result
 

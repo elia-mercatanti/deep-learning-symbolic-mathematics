@@ -1,14 +1,13 @@
 # Deep Learning for Symbolic Mathematics
+
 [![Python Package using Conda on Linux](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/actions/workflows/conda-linux.yml/badge.svg)](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/actions/workflows/conda-linux.yml)
-[![Python Package using Conda on Windows](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/actions/workflows/conda-windows.yml/badge.svg)](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/actions/workflows/conda-windows.yml)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=elia-mercatanti_deep-learning-symbolic-mathematics&metric=alert_status)](https://sonarcloud.io/dashboard?id=elia-mercatanti_deep-learning-symbolic-mathematics)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=elia-mercatanti_deep-learning-symbolic-mathematics&metric=bugs)](https://sonarcloud.io/dashboard?id=elia-mercatanti_deep-learning-symbolic-mathematics)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=elia-mercatanti_deep-learning-symbolic-mathematics&metric=code_smells)](https://sonarcloud.io/dashboard?id=elia-mercatanti_deep-learning-symbolic-mathematics)
-[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=elia-mercatanti_deep-learning-symbolic-mathematics&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=elia-mercatanti_deep-learning-symbolic-mathematics)
 
-Original Paper: [Deep Learning for Symbolic Mathematics](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/blob/master/paper/deep-learning-symbolic-mathematics-paper.pdf) (ICLR 2020).
+Original
+Paper: [Deep Learning for Symbolic Mathematics](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/blob/master/paper/deep-learning-symbolic-mathematics-paper.pdf) (
+ICLR 2020).
 
-Original GitHub Project: [Deep Learning for Symbolic Mathematics](https://github.com/facebookresearch/SymbolicMathematics).
+Original GitHub
+Project: [Deep Learning for Symbolic Mathematics](https://github.com/facebookresearch/SymbolicMathematics).
 
 This repository contains code for:
 
@@ -36,10 +35,12 @@ We also provide:
 - **Trained models**:
     - Models trained with different configurations of training data.
 - **Notebook**:
-    - An **[ipython notebook](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/blob/master/jupyter-notebook/beam_integration.ipynb)**
-      with an interactive demo of the model on function integration.
-      
+  -
+  An **[ipython notebook](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/blob/master/jupyter-notebook/beam_integration.ipynb)**
+  with an interactive demo of the model on function integration.
+
 ## Dependencies
+
 - Required:
     - [Python 3](https://www.python.org/)
     - [NumPy](http://www.numpy.org/)
@@ -95,21 +96,21 @@ be used for training. This can easily be done by setting `--export_data true`:
 python main.py --export_data true
 
 ## Main Parameters
---batch_size 32
---cpu true
---exp_name prim_bwd_data
+--batch_size 32                # number of sentences per batch
+--cpu true                     # run on CPU
+--exp_name prim_bwd_data       # experiment name
 --num_workers 20               # number of processes
---tasks prim_bwd               # task (prim_fwd, prim_bwd, prim_ibp, ode1, ode2)
+--tasks prim_bwd               # type of task (prim_fwd, prim_bwd, prim_ibp, ode1, ode2)
 --env_base_seed -1             # generator seed (-1 for random seed)
 
 ## Generator Configuration
---n_variables 1                # number of variables (x, y, z)
+--n_variables 1                # number of variables in expressions (between 1 and 3) (x, y, z)
 --n_coefficients 0             # number of coefficients (a_0, a_1, a_2, ...)
---leaf_probs "0.75,0,0.25,0"   # leaf sampling probabilities
+--leaf_probs "0.75,0,0.25,0"   # leaf probabilities of being a variable, a coefficient, an integer, or a constant
 --max_ops 15                   # maximum number of operators (at generation, but can be much longer after derivation)
 --max_int 5                    # max value of sampled integers
---positive true                # sign of sampled integers
---max_len 512                  # maximum length of generated equations
+--positive true                # sign of sampled integers, do not sample negative numbers
+--max_len 512                  # maximum length of generated equations (maximum sequences length)
 
 ## Considered operators, with (unnormalized) sampling probabilities
 --operators "add:10,sub:3,mul:10,div:5,sqrt:4,pow2:4,pow3:2,pow4:1,pow5:1,ln:4,exp:4,sin:4,cos:4,tan:4,asin:1,acos:1,atan:1,sinh:1,cosh:1,tanh:1,asinh:1,acosh:1,atanh:1"
@@ -123,16 +124,16 @@ Data will be exported in the prefix and infix formats to:
 - `./dumped/prim_bwd_data/EXP_ID/data.infix`
 
 `data.prefix` and `data.infix` are two parallel files containing the same number of lines, with the same equations
-written in prefix and infix representations respectively. In these files, each line contains an input (e.g., the function
-to integrate), and the associated output (e.g., an integral) separated by a tab. In practice, the model only operates on
-prefix data. The infix data is optional, but more human-readable, and can be used for debugging purposes.
+written in prefix and infix representations respectively. In these files, each line contains an input (e.g., the
+function to integrate), and the associated output (e.g., an integral) separated by a tab. In practice, the model only
+operates on prefix data. The infix data is optional, but more human-readable, and can be used for debugging purposes.
 
 Note that some generators are very fast, such as `prim_bwd`, which only requires to generate a random function and to
 differentiate it. The others are significantly longer. For instance, the validity of differential equations is checked (
-symbolically and numerically) after generation, which can be expensive. In our case, we generated the data across many 
-CPUs to create a large training set. For reproducibility, we provide our training / validation / test
-datasets in the links above. Generators can be made faster by decreasing the timeout generation time in `char_sp.py`,
-but this may slightly reduce the set of equations that the generator can produce.
+symbolically and numerically) after generation, which can be expensive. In our case, we generated the data across many
+CPUs to create a large training set. For reproducibility, we provide our training / validation / test datasets in the
+links above. Generators can be made faster by decreasing the timeout generation time in `char_sp.py`, but this may
+slightly reduce the set of equations that the generator can produce.
 
 If you generate your own dataset, you will notice that the generator generates a lot of duplicates (which is inevitable
 if you parallelize the generation). In practice, we remove duplicates using:
@@ -191,8 +192,8 @@ python main.py
 --fp16 true --amp 2     # float16 training
 
 ## dataset location
---tasks "prim_fwd"                                                    # task
---reload_data "prim_fwd,prim_fwd.train,prim_fwd.valid,prim_fwd.test"  # data location
+--tasks "prim_fwd"                                                    # type of task
+--reload_data "prim_fwd,prim_fwd.train,prim_fwd.valid,prim_fwd.test"  # data locations
 --reload_size 40000000                                                # training set size
 
 ## model parameters

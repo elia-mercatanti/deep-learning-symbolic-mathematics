@@ -5,19 +5,20 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-import os
+from logging import getLogger
 from collections import OrderedDict
 from concurrent.futures import ProcessPoolExecutor
-from logging import getLogger
-
-import sympy as sp
+import os
 import torch
+import sympy as sp
 
+from .utils import to_cuda, timeout, TimeoutError
 from .envs.char_sp import InvalidPrefixExpression, is_valid_expr
 from .envs.sympy_utils import simplify
-from .utils import to_cuda, timeout, TimeoutErrorException
+
 
 logger = getLogger()
+
 
 BUCKET_LENGTH_SIZE = 5
 
@@ -67,7 +68,7 @@ def check_hypothesis(eq):
         if is_valid_expr(hyp_infix):
             hyp_infix = str(hyp)
 
-    except (TimeoutErrorException, Exception) as e:
+    except (TimeoutError, Exception) as e:
         e_name = type(e).__name__
         if not isinstance(e, InvalidPrefixExpression):
             logger.error(f"Exception {e_name} when checking hypothesis: {hyp_infix}")
@@ -86,6 +87,7 @@ def check_hypothesis(eq):
 
 
 class Evaluator(object):
+
     ENV = None
 
     def __init__(self, trainer):
@@ -301,8 +303,7 @@ class Evaluator(object):
 
             # invalid top-1 predictions - check if there is a solution in the beam
             invalid_idx = (1 - valid).nonzero().view(-1)
-            logger.info(
-                f"({n_total.sum().item()}/{eval_size}) Found {bs - len(invalid_idx)}/{bs} valid top-1 predictions. Generating solutions ...")
+            logger.info(f"({n_total.sum().item()}/{eval_size}) Found {bs - len(invalid_idx)}/{bs} valid top-1 predictions. Generating solutions ...")
 
             # generate
             _, _, generations = decoder.generate_beam(
@@ -383,9 +384,9 @@ class Evaluator(object):
         _n_total = n_total.sum().item()
         logger.info(f"{_n_valid}/{_n_total} ({100. * _n_valid / _n_total}%) equations were evaluated correctly.")
         logger.info(n_valid[
-                    :(n_valid.sum(1) > 0).nonzero().view(-1)[-1] + 1,
-                    :(n_valid.sum(0) > 0).nonzero().view(-1)[-1] + 1
-                    ])
+            :(n_valid.sum(1) > 0).nonzero().view(-1)[-1] + 1,
+            :(n_valid.sum(0) > 0).nonzero().view(-1)[-1] + 1
+        ])
 
         # compute perplexity and prediction accuracy
         assert _n_total == eval_size or self.trainer.data_path
@@ -395,8 +396,7 @@ class Evaluator(object):
         for i in range(len(n_total)):
             if n_total[i].item() == 0:
                 continue
-            logger.info(
-                f"{i}: {n_valid[i].sum().item()} / {n_total[i].item()} ({100. * n_valid[i].sum().item() / max(n_total[i].item(), 1)}%)")
+            logger.info(f"{i}: {n_valid[i].sum().item()} / {n_total[i].item()} ({100. * n_valid[i].sum().item() / max(n_total[i].item(), 1)}%)")
             scores[f'{data_type}_{task}_beam_acc_{i}'] = 100. * n_valid[i].sum().item() / max(n_total[i].item(), 1)
 
 
