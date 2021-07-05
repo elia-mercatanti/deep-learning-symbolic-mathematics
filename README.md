@@ -1,9 +1,13 @@
 # Deep Learning for Symbolic Mathematics
+
 [![Python Package using Conda on Linux](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/actions/workflows/conda-linux.yml/badge.svg)](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/actions/workflows/conda-linux.yml)
 
-Original Paper: [Deep Learning for Symbolic Mathematics](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/blob/master/paper/deep-learning-symbolic-mathematics-paper.pdf) (ICLR 2020).
+Original
+Paper: [Deep Learning for Symbolic Mathematics](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/blob/master/paper/deep-learning-symbolic-mathematics-paper.pdf) (
+ICLR 2020).
 
-Original GitHub Project: [Deep Learning for Symbolic Mathematics](https://github.com/facebookresearch/SymbolicMathematics).
+Original GitHub
+Project: [Deep Learning for Symbolic Mathematics](https://github.com/facebookresearch/SymbolicMathematics).
 
 This repository contains code for:
 
@@ -31,10 +35,12 @@ We also provide:
 - **Trained models**:
     - Models trained with different configurations of training data.
 - **Notebook**:
-    - An **[ipython notebook](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/blob/master/jupyter-notebook/beam_integration.ipynb)**
-      with an interactive demo of the model on function integration.
-      
+  -
+  An **[ipython notebook](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/blob/master/jupyter-notebook/beam_integration.ipynb)**
+  with an interactive demo of the model on function integration.
+
 ## Dependencies
+
 - Required:
     - [Python 3](https://www.python.org/)
     - [NumPy](http://www.numpy.org/)
@@ -118,16 +124,16 @@ Data will be exported in the prefix and infix formats to:
 - `./dumped/prim_bwd_data/EXP_ID/data.infix`
 
 `data.prefix` and `data.infix` are two parallel files containing the same number of lines, with the same equations
-written in prefix and infix representations respectively. In these files, each line contains an input (e.g., the function
-to integrate), and the associated output (e.g., an integral) separated by a tab. In practice, the model only operates on
-prefix data. The infix data is optional, but more human-readable, and can be used for debugging purposes.
+written in prefix and infix representations respectively. In these files, each line contains an input (e.g., the
+function to integrate), and the associated output (e.g., an integral) separated by a tab. In practice, the model only
+operates on prefix data. The infix data is optional, but more human-readable, and can be used for debugging purposes.
 
 Note that some generators are very fast, such as `prim_bwd`, which only requires to generate a random function and to
 differentiate it. The others are significantly longer. For instance, the validity of differential equations is checked (
-symbolically and numerically) after generation, which can be expensive. In our case, we generated the data across many 
-CPUs to create a large training set. For reproducibility, we provide our training / validation / test
-datasets in the links above. Generators can be made faster by decreasing the timeout generation time in `char_sp.py`,
-but this may slightly reduce the set of equations that the generator can produce.
+symbolically and numerically) after generation, which can be expensive. In our case, we generated the data across many
+CPUs to create a large training set. For reproducibility, we provide our training / validation / test datasets in the
+links above. Generators can be made faster by decreasing the timeout generation time in `char_sp.py`, but this may
+slightly reduce the set of equations that the generator can produce.
 
 If you generate your own dataset, you will notice that the generator generates a lot of duplicates (which is inevitable
 if you parallelize the generation). In practice, we remove duplicates using:
