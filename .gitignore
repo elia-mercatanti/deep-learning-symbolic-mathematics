@@ -14,4 +14,4 @@ models/
 experiments/
 
 ### Jupyter Notebooks ###
-jupyter-notebook/.ipynb_checkpoints/
+jupyter-notebooks/.ipynb_checkpoints/
