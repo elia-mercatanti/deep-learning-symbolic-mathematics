@@ -11,6 +11,7 @@ import multiprocessing
 import random
 
 import numpy as np
+import matplotlib.pyplot as plt
 import torch
 
 import src
@@ -146,6 +147,10 @@ def get_parser():
     parser.add_argument("--master_port", type=int, default=-1,
                         help="Master port (for multi-node SLURM jobs)")
 
+    # Accuracy / Loss Plot
+    parser.add_argument("--plot_title", type=str, default="",
+                        help="Plot title for Accuracy / Loss validation and test set variation")
+
     return parser
 
 
@@ -178,6 +183,10 @@ def main(params):
         exit()
 
     # training
+    valid_accuracy = np.zeros(params.max_epoch, dtype=float)
+    test_accuracy = np.zeros(params.max_epoch, dtype=float)
+    valid_cross_entropy_accuracy = np.zeros(params.max_epoch, dtype=float)
+    test_cross_entropy_accuracy = np.zeros(params.max_epoch, dtype=float)
     for _ in range(params.max_epoch):
 
         logger.info("============ Starting epoch %i ... ============" % trainer.epoch)
@@ -206,10 +215,47 @@ def main(params):
         if params.is_master:
             logger.info("__log__:%s" % json.dumps(scores))
 
+        # saves accuracy and loss score for the plot only if max epoch is not reached
+        if scores["epoch"] < params.max_epoch:
+            valid_accuracy[scores["epoch"]] = scores["valid_" + params.tasks[0] + "_acc"]
+            test_accuracy[scores["epoch"]] = scores["test_" + params.tasks[0] + "_acc"]
+            valid_cross_entropy_accuracy[scores["epoch"]] = scores["valid_" + params.tasks[0] + "_xe_loss"]
+            test_cross_entropy_accuracy[scores["epoch"]] = scores["test_" + params.tasks[0] + "_xe_loss"]
+
         # end of epoch
         trainer.save_best_model(scores)
         trainer.save_periodic()
         trainer.end_epoch(scores)
+
+    # plot accuracy and loss score for the plot only if max epoch is not exceeded
+    if scores["epoch"] == params.max_epoch - 1:
+        plot_accuracy_loss_variation(params, valid_accuracy, test_accuracy, valid_cross_entropy_accuracy,
+                                     test_cross_entropy_accuracy)
+
+
+def plot_accuracy_loss_variation(params, valid_accuracy, test_accuracy, valid_cross_entropy_accuracy,
+                                 test_cross_entropy_accuracy):
+    epoch_numbers = np.arange(0, params.max_epoch, dtype=float)
+
+    # plot data
+    plt.plot(epoch_numbers, valid_accuracy, label="Validation Set Accuracy")
+    plt.plot(epoch_numbers, test_accuracy, label="Test Set Accuracy")
+    plt.plot(epoch_numbers, valid_cross_entropy_accuracy, label="Validation Set Cross Entropy Loss")
+    plt.plot(epoch_numbers, test_cross_entropy_accuracy, label="Test Set Cross Entropy Loss")
+
+    # labels for the axis
+    plt.xlabel("Epochs")
+    plt.ylabel("Accuracy - Loss")
+    plt.xticks(range(0, params.max_epoch))
+
+    # plot title and legend
+    if params.plot_title:
+        plt.title(params.plot_title + " - Size: " + str(params.reload_size))
+    plt.legend()
+
+    # saves and show the plot
+    plt.savefig(params.dump_path + "/accuracy_loss_plot.pdf")
+    plt.show()
 
 
 if __name__ == '__main__':
