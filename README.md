@@ -35,9 +35,12 @@ We also provide:
 - **Trained models**:
     - Models trained with different configurations of training data.
 - **Notebook**:
-  -
-  An **[ipython notebook](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/blob/master/jupyter-notebook/beam_integration.ipynb)**
+  - An **[ipython notebook](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/blob/master/jupyter-notebook/beam_integration.ipynb)**
   with an interactive demo of the model on function integration.
+  - An **[ipython notebook](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/blob/master/jupyter-notebooks/differential_equations.ipynb)**
+  with an interactive demo of the model on differential equations.
+  - An **[ipython notebook](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/blob/master/jupyter-notebooks/differential_equations.ipynb)**
+  with an interactive demo of the model on various real problem examples.
 
 ## Dependencies
 
@@ -244,9 +247,9 @@ python main.py
 
 ## evaluation parameters
 --beam_eval true            # beam evaluation (with false, outputs are only compared with dataset solutions)
---beam_size 10              # beam size
---beam_length_penalty 1.0   # beam length penalty (1.0 corresponds to average of log-probs)
---beam_early_stopping 1     # beam early stopping
+--beam_size 10              # beam size, default = 1 (greedy decoding)
+--beam_length_penalty 1.0   # beam length penalty (1.0 corresponds to average of log-probs), values < 1.0 favor shorter sentences, while values > 1.0 favor longer ones.
+--beam_early_stopping 1     # beam early stopping, stop as soon as we have `beam_size` hypotheses, although longer ones may have better scores.
 --eval_verbose 1            # export beam results (set to 2 to evaluate with beam even when greedy was successful)
 --eval_verbose_print false  # print detailed evaluation results
 ```
