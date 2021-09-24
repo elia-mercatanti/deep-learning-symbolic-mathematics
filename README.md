@@ -35,9 +35,12 @@ We also provide:
 - **Trained models**:
     - Models trained with different configurations of training data.
 - **Notebook**:
-  -
-  An **[ipython notebook](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/blob/master/jupyter-notebook/beam_integration.ipynb)**
+  - An **[ipython notebook](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/blob/master/jupyter-notebook/beam_integration.ipynb)**
   with an interactive demo of the model on function integration.
+  - An **[ipython notebook](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/blob/master/jupyter-notebooks/differential_equations.ipynb)**
+  with an interactive demo of the model on differential equations.
+  - An **[ipython notebook](https://github.com/elia-mercatanti/deep-learning-symbolic-mathematics/blob/master/jupyter-notebooks/differential_equations.ipynb)**
+  with an interactive demo of the model on various real problem examples.
 
 ## Dependencies
 
