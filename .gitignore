@@ -15,3 +15,8 @@ experiments/
 
 ### Jupyter Notebooks ###
 jupyter-notebooks/.ipynb_checkpoints/
+
+### Thesis ###
+thesis/*
+!thesis/*.pdf
+!thesis/img/
