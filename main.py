@@ -185,6 +185,7 @@ def main(params):
     # training
     valid_accuracy = np.zeros(params.max_epoch, dtype=float)
     test_accuracy = np.zeros(params.max_epoch, dtype=float)
+    train_cross_entropy_accuracy = np.zeros(params.max_epoch, dtype=float)
     valid_cross_entropy_accuracy = np.zeros(params.max_epoch, dtype=float)
     test_cross_entropy_accuracy = np.zeros(params.max_epoch, dtype=float)
     for _ in range(params.max_epoch):
@@ -219,6 +220,10 @@ def main(params):
         if scores["epoch"] < params.max_epoch:
             valid_accuracy[scores["epoch"]] = scores["valid_" + params.tasks[0] + "_acc"]
             test_accuracy[scores["epoch"]] = scores["test_" + params.tasks[0] + "_acc"]
+            if len(trainer.stats[params.tasks[0]]) != 0:
+                train_cross_entropy_accuracy[scores["epoch"]] = trainer.stats[params.tasks[0]][-1]
+            else:
+                train_cross_entropy_accuracy[scores["epoch"]] = 0
             valid_cross_entropy_accuracy[scores["epoch"]] = scores["valid_" + params.tasks[0] + "_xe_loss"]
             test_cross_entropy_accuracy[scores["epoch"]] = scores["test_" + params.tasks[0] + "_xe_loss"]
 
@@ -229,24 +234,25 @@ def main(params):
 
     # plot accuracy and loss score for the plot only if max epoch is not exceeded
     if scores["epoch"] == params.max_epoch - 1:
-        plot_accuracy_loss_variation(params, valid_accuracy, test_accuracy, valid_cross_entropy_accuracy,
-                                     test_cross_entropy_accuracy)
+        plot_accuracy_loss_variation(params, valid_accuracy, test_accuracy, train_cross_entropy_accuracy,
+                                     valid_cross_entropy_accuracy, test_cross_entropy_accuracy)
 
 
-def plot_accuracy_loss_variation(params, valid_accuracy, test_accuracy, valid_cross_entropy_accuracy,
-                                 test_cross_entropy_accuracy):
+def plot_accuracy_loss_variation(params, valid_accuracy, test_accuracy, train_cross_entropy_accuracy,
+                                 valid_cross_entropy_accuracy, test_cross_entropy_accuracy):
     epoch_numbers = np.arange(0, params.max_epoch, dtype=float)
 
     # plot data
     plt.plot(epoch_numbers, valid_accuracy, label="Validation Set Accuracy")
     plt.plot(epoch_numbers, test_accuracy, label="Test Set Accuracy")
+    plt.plot(epoch_numbers, train_cross_entropy_accuracy, label="Train Set Cross Entropy Loss")
     plt.plot(epoch_numbers, valid_cross_entropy_accuracy, label="Validation Set Cross Entropy Loss")
     plt.plot(epoch_numbers, test_cross_entropy_accuracy, label="Test Set Cross Entropy Loss")
 
     # labels for the axis
     plt.xlabel("Epochs")
     plt.ylabel("Accuracy - Loss")
-    plt.xticks(range(0, params.max_epoch))
+    plt.xticks(np.arange(0, params.max_epoch, 5))
 
     # plot title and legend
     if params.plot_title:
