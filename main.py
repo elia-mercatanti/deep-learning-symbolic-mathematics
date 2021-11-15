@@ -11,6 +11,7 @@ import multiprocessing
 import random
 
 import numpy as np
+import matplotlib.pyplot as plt
 import torch
 
 import src
@@ -146,6 +147,10 @@ def get_parser():
     parser.add_argument("--master_port", type=int, default=-1,
                         help="Master port (for multi-node SLURM jobs)")
 
+    # Accuracy / Loss Plot
+    parser.add_argument("--plot_title", type=str, default="",
+                        help="Plot title for Accuracy / Loss validation and test set variation")
+
     return parser
 
 
@@ -178,6 +183,12 @@ def main(params):
         exit()
 
     # training
+    initial_epoch = trainer.epoch
+    valid_accuracy = []
+    test_accuracy = []
+    train_cross_entropy_accuracy = []
+    valid_cross_entropy_accuracy = []
+    test_cross_entropy_accuracy = []
     for _ in range(params.max_epoch):
 
         logger.info("============ Starting epoch %i ... ============" % trainer.epoch)
@@ -206,10 +217,52 @@ def main(params):
         if params.is_master:
             logger.info("__log__:%s" % json.dumps(scores))
 
+        # saves accuracy and loss score for the plot
+        valid_accuracy.append(scores["valid_" + params.tasks[0] + "_acc"])
+        test_accuracy.append(scores["test_" + params.tasks[0] + "_acc"])
+        if len(trainer.stats[params.tasks[0]]) != 0:
+            train_cross_entropy_accuracy.append(trainer.stats[params.tasks[0]][-1])
+        else:
+            train_cross_entropy_accuracy.append(0)
+        valid_cross_entropy_accuracy.append(scores["valid_" + params.tasks[0] + "_xe_loss"])
+        test_cross_entropy_accuracy.append(scores["test_" + params.tasks[0] + "_xe_loss"])
+
+        # plot accuracy and loss score for the plot
+        plot_accuracy_loss_variation(params, trainer, initial_epoch, valid_accuracy, test_accuracy,
+                                     train_cross_entropy_accuracy, valid_cross_entropy_accuracy,
+                                     test_cross_entropy_accuracy)
+
         # end of epoch
         trainer.save_best_model(scores)
         trainer.save_periodic()
         trainer.end_epoch(scores)
+
+
+def plot_accuracy_loss_variation(params, trainer, initial_epoch, valid_accuracy, test_accuracy,
+                                 train_cross_entropy_accuracy, valid_cross_entropy_accuracy,
+                                 test_cross_entropy_accuracy):
+    epoch_numbers = np.arange(initial_epoch, trainer.epoch + 1, dtype=float)
+
+    # plot data
+    plt.plot(epoch_numbers, valid_accuracy, label="Validation Set Accuracy")
+    plt.plot(epoch_numbers, test_accuracy, label="Test Set Accuracy")
+    plt.plot(epoch_numbers, train_cross_entropy_accuracy, label="Train Set Cross Entropy Loss")
+    plt.plot(epoch_numbers, valid_cross_entropy_accuracy, label="Validation Set Cross Entropy Loss")
+    plt.plot(epoch_numbers, test_cross_entropy_accuracy, label="Test Set Cross Entropy Loss")
+
+    # labels for the axis
+    plt.xlabel("Epochs")
+    plt.ylabel("Accuracy - Loss")
+    plt.xticks(np.arange(initial_epoch, trainer.epoch + 1, 5))
+
+    # plot title and legend
+    if params.plot_title:
+        plt.title(params.plot_title + " - Size: " + str(params.reload_size))
+    plt.legend()
+
+    # saves and show the plot
+    plt.savefig(params.dump_path + "/accuracy_loss_plot.pdf")
+    plt.show()
 
 
 if __name__ == '__main__':
