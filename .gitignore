@@ -18,7 +18,7 @@ jupyter-notebooks/.ipynb_checkpoints/
 
 ### Thesis ###
 thesis/*
-!thesis/*.pdf
+!thesis/thesis.pdf
 !thesis/img/
 
 ### Slides ###
