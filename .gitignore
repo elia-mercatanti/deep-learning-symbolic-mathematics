@@ -24,7 +24,7 @@ thesis/*
 ### Slides ###
 slides/*
 !slides/*.pdf
-!slides/img/
+!slides/images/
 
 ### Abstract ###
 abstract/*
